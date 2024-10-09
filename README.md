@@ -1,53 +1,18 @@
 # herovired_cicd_assignment
 
-Step - 1: Created a new Repo herovired_cicd_assignment
+Step - 1: Created a new Repo herovired_cicd_assignment.
+
 Step - 2: Added files for testing.
+
 Step - 3: Added python codes to check commits.
-'''
-import requests, os, sys
 
-# GitHub repository details
-REPO_OWNER = 'prrandheer621'
-REPO_NAME = 'herovired_cicd_assignment'
-GITHUB_API_URL = f'https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/commits'
-# File to store the last commit SHA
-LAST_COMMIT_FILE = './lastCommit.txt'
+Step - 4: Added bash code to do git pull, and move the changed files, githubSync.sh.
 
-def get_latest_commit():
-  response = requests.get(GITHUB_API_URL)
-  if response.status_code == 200:
-    commits = response.json()
-    return commits[0]['sha']
-  else:
-    print(f"Failed to fetch commits: {response.status_code}")
-    return None
+Step - 5: Added python code to check the latest commit, checkGithub.py.
 
-def get_stored_commit():
-  if os.path.exists(LAST_COMMIT_FILE):
-    with open(LAST_COMMIT_FILE, 'r') as f:
-      return f.read().strip()
-  return None
+Step - 6: Added a bash script, cronGit.sh, to run the python file, checkGithub.py, which will check latest git commit, and based on error code, if it is 0, then it will run githubSync.sh.
 
-def update_stored_commit(latest_commit):
-  with open(LAST_COMMIT_FILE, 'w') as f:
-    f.write(latest_commit)
+Step - 7: Added the file cronGit.sh to the "sudo crontab -e" like below, which will save the logs in ci_cd.txt, after running every 5 mins.
+        */5 * * * * /home/devops_practice/gradedAssignmentCICD/cronGit.sh >> /home/devops_practice/gradedAssignmentCICD/ci_cd.log 2>&1
 
-def main():
-  latest_commit = get_latest_commit()
-  if not latest_commit:
-    sys.exit(1)
-  stored_commit = get_stored_commit()
-  if latest_commit != stored_commit:
-    print("New changes detected")
-    update_stored_commit(latest_commit)
-    sys.exit(0)
-  else:
-    print("No new changes")
-    sys.exit(1)
-
-
-if __name__ == "__main__":
-  main()
-'''
-
-
+Step - 8: Cronjob was writing permission denied in log file, so ran "sudo chmod +x cronGit.sh", to give executable permission.
